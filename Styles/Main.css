@@ -11,6 +11,8 @@ html {
 body {
     font-family: sans-serif;
     color: white;
+    scrollbar-color: rgba(255, 255, 255, 0.3);
+    scrollbar-width: thin;
 }
 
 /* Privacy Policy & TOS Popup */
