@@ -3,19 +3,21 @@ name: SFTP Sync
 on:
   push:
     branches:
-      - main
+      - main  # Of een andere branch die jij wil
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Delete /ROOT via lftp
+    - name: Install lftp
+      run: sudo apt-get update && sudo apt-get install -y lftp
+
+    - name: Delete and recreate /ROOT on server
       run: |
-        sudo apt-get update && sudo apt-get install -y lftp
         lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" sftp://$SFTP_SERVER:$SFTP_PORT -e "
           rm -r /ROOT;
           mkdir /ROOT;
@@ -27,14 +29,14 @@ jobs:
         SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
         SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
 
-    - name: Upload files to /ROOT
-      uses: SamKirkland/FTP-Deploy-Action@v4
-      with:
-        server: ${{ secrets.SFTP_SERVER }}
-        username: ${{ secrets.SFTP_USERNAME }}
-        password: ${{ secrets.SFTP_PASSWORD }}
-        port: ${{ secrets.SFTP_PORT || '22' }}
-        local-dir: ./  # hele repo
-        server-dir: /ROOT
-        protocol: sftp
-        dangerous-clean-slate: false
+    - name: Upload all repo files to /ROOT
+      run: |
+        lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" sftp://$SFTP_SERVER:$SFTP_PORT -e "
+          mirror -R ./ /ROOT;
+          bye
+        "
+      env:
+        SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
+        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
