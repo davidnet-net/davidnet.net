@@ -1,5 +1,3 @@
-import { get_session_information } from "./Scripts/Session.js";
-
 window.addEventListener("scroll", function() {
     let scrollMessage = document.getElementById("scrollMessage");
     if (window.scrollY > 100) {
@@ -9,7 +7,3 @@ window.addEventListener("scroll", function() {
     }
 });
 
-document.addEventListener("DOMContentLoaded", async function() {
-    const sessioninfo = await get_session_information();
-    console.log(sessioninfo);
-});
