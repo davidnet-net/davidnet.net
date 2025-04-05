@@ -19,6 +19,8 @@ jobs:
     - name: Delete and recreate /ROOT on server
       run: |
         lftp -u "$SSH_USER","$SSH_PASS" sftp://$SSH_HOST:$SFTP_PORT -e "
+          set sftp:auto-confirm yes;
+          set sftp:connect-program 'ssh -o StrictHostKeyChecking=no';
           rm -r /ROOT;
           mkdir /ROOT;
           bye
@@ -27,11 +29,13 @@ jobs:
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_USER: ${{ secrets.SSH_USER }}
         SSH_PASS: ${{ secrets.SSH_PASS }}
-        SFTP_PORT: ${{  '22' }}
+        SFTP_PORT: '22'
 
     - name: Upload all repo files to /ROOT
       run: |
         lftp -u "$SSH_USER","$SSH_PASS" sftp://$SSH_HOST:$SFTP_PORT -e "
+          set sftp:auto-confirm yes;
+          set sftp:connect-program 'ssh -o StrictHostKeyChecking=no';
           mirror -R ./ /ROOT;
           bye
         "
@@ -39,4 +43,4 @@ jobs:
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_USER: ${{ secrets.SSH_USER }}
         SSH_PASS: ${{ secrets.SSH_PASS }}
-        SFTP_PORT: ${{  '22' }}
+        SFTP_PORT: '22'
