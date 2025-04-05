@@ -105,6 +105,10 @@ header {
     color: #00bfff;
 }
 
+#usericon {
+    border-radius: 50%;
+}
+
 /* Hamburger Menu (Hidden by Default) */
 .hamburger {
     display: none;
