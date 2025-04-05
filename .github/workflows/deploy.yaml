@@ -18,7 +18,7 @@ jobs:
 
     - name: Delete and recreate /ROOT on server
       run: |
-        lftp -u "$SSH_USER","$SSH_PASS" sftp://$SSH_HOST:$SFTP_PORT -e "
+        lftp -u "$SSH_USER","$SSH_PASS" sftp://$SSH_HOST:22 -e "
           set sftp:auto-confirm yes;
           set sftp:connect-program 'ssh -o StrictHostKeyChecking=no';
           rm -r /ROOT;
