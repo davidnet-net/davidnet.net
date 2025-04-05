@@ -61,17 +61,12 @@ export async function get_session_information() {
 }
 
 export async function get_session_token() {
-    const session_token = localStorage.getItem("session_token");
+    const session_token = GetSessionFromCookie();
+    localStorage.setItem("session_token", session_token);
     if (session_token) {
         return session_token;
     } else {
-        const session_token = GetSessionFromCookie();
-        if (session_token) {
-            localStorage.setItem("session_token", session_token);
-            return session_token;
-        } else {
-            return null;
-        }
+        return false;
     }
 }
 
