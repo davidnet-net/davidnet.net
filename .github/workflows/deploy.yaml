@@ -1,4 +1,4 @@
-name: Sync with SFTP Server
+name: SFTP Sync
 
 on:
   push:
@@ -6,39 +6,35 @@ on:
       - main
 
 jobs:
-  sync:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Delete /ROOT folder on SFTP server
-      uses: appleboy/sftp-action@master
-      with:
-        host: ${{ secrets.SFTP_HOST }}
-        username: ${{ secrets.SFTP_USERNAME }}
-        password: ${{ secrets.SFTP_PASSWORD }}
-        port: 22
-        command: |
-          rm -rf /ROOT
+    - name: Delete /ROOT via lftp
+      run: |
+        sudo apt-get update && sudo apt-get install -y lftp
+        lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" sftp://$SFTP_SERVER:$SFTP_PORT -e "
+          rm -r /ROOT;
+          mkdir /ROOT;
+          bye
+        "
+      env:
+        SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
+        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
 
-    - name: Create /ROOT folder on SFTP server
-      uses: appleboy/sftp-action@master
+    - name: Upload files to /ROOT
+      uses: SamKirkland/FTP-Deploy-Action@v4
       with:
-        host: ${{ secrets.SFTP_HOST }}
+        server: ${{ secrets.SFTP_SERVER }}
         username: ${{ secrets.SFTP_USERNAME }}
         password: ${{ secrets.SFTP_PASSWORD }}
-        port: 22
-        command: |
-          mkdir /ROOT
-
-    - name: Upload files to /ROOT folder
-      uses: appleboy/sftp-action@master
-      with:
-        host: ${{ secrets.SFTP_HOST }}
-        username: ${{ secrets.SFTP_USERNAME }}
-        password: ${{ secrets.SFTP_PASSWORD }}
-        port: 22
-        local-dir: "./"
-        remote-dir: "/ROOT"
+        port: ${{ secrets.SFTP_PORT || '22' }}
+        local-dir: ./  # hele repo
+        server-dir: /ROOT
+        protocol: sftp
+        dangerous-clean-slate: false
