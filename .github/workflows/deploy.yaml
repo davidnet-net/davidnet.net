@@ -18,25 +18,25 @@ jobs:
 
     - name: Delete and recreate /ROOT on server
       run: |
-        lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" sftp://$SFTP_SERVER:$SFTP_PORT -e "
+        lftp -u "$SSH_USER","$SSH_PASS" sftp://$SSH_HOST:$SFTP_PORT -e "
           rm -r /ROOT;
           mkdir /ROOT;
           bye
         "
       env:
-        SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
-        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
-        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-        SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASS: ${{ secrets.SSH_PASS }}
+        SFTP_PORT: ${{  '22' }}
 
     - name: Upload all repo files to /ROOT
       run: |
-        lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" sftp://$SFTP_SERVER:$SFTP_PORT -e "
+        lftp -u "$SSH_USER","$SSH_PASS" sftp://$SSH_HOST:$SFTP_PORT -e "
           mirror -R ./ /ROOT;
           bye
         "
       env:
-        SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
-        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
-        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-        SFTP_PORT: ${{ secrets.SFTP_PORT || '22' }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASS: ${{ secrets.SSH_PASS }}
+        SFTP_PORT: ${{  '22' }}
