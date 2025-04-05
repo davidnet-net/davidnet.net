@@ -1,0 +1,44 @@
+name: Sync with SFTP Server
+
+on:
+  push:
+    branches:
+      - main  # Trigger when pushing to the main branch
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Delete /ROOT folder on SFTP server
+      uses: appleboy/sftp-action@v0.1.7
+      with:
+        host: ${{ secrets.SFTP_HOST }}
+        username: ${{ secrets.SFTP_USERNAME }}
+        password: ${{ secrets.SFTP_PASSWORD }}
+        port: 22
+        command: |
+          rm -rf /ROOT  # Delete the /ROOT folder
+
+    - name: Create /ROOT folder on SFTP server
+      uses: appleboy/sftp-action@v0.1.7
+      with:
+        host: ${{ secrets.SFTP_HOST }}
+        username: ${{ secrets.SFTP_USERNAME }}
+        password: ${{ secrets.SFTP_PASSWORD }}
+        port: 22
+        command: |
+          mkdir /ROOT  # Create a new /ROOT folder
+
+    - name: Upload files to /ROOT folder
+      uses: appleboy/sftp-action@v0.1.7
+      with:
+        host: ${{ secrets.SFTP_HOST }}
+        username: ${{ secrets.SFTP_USERNAME }}
+        password: ${{ secrets.SFTP_PASSWORD }}
+        port: 22
+        local-dir: "./"  # Upload everything from the root of the repository
+        remote-dir: "/ROOT"  # Upload to /ROOT/* on the server
