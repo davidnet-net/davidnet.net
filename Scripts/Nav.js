@@ -1,5 +1,5 @@
 import { get_session_information } from "https://davidnet.net/Scripts/Session.js";
-d
+
 ocument.addEventListener("DOMContentLoaded", async () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
